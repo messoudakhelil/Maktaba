@@ -28,8 +28,16 @@ class BookViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+
+    private val _totalBooks = MutableStateFlow(0)
+    val totalBooks: StateFlow<Int> = _totalBooks.asStateFlow()
+    private val _bigBooks = MutableStateFlow(0)
+    val bigBooks: StateFlow<Int> = _bigBooks.asStateFlow()
     init {
-        // Load books when ViewModel is created
+
         loadBooks()
     }
 
@@ -41,7 +49,24 @@ class BookViewModel(
             _isLoading.value = true
             try {
                 val bookList = getBooksUseCase()
-                _books.value = bookList
+
+                // عدد كل الكتب
+                _totalBooks.value = bookList.size
+
+                // عدد الكتب أكثر من 400 صفحة
+                _bigBooks.value = bookList.count { it.nbPages > 400 }
+
+                // البحث
+                val filteredBooks = if (_searchQuery.value.isEmpty()) {
+                    bookList
+                } else {
+                    bookList.filter {
+                        it.title.contains(_searchQuery.value, ignoreCase = true)
+                    }
+                }
+
+                _books.value = filteredBooks
+
             } finally {
                 _isLoading.value = false
             }
@@ -53,6 +78,11 @@ class BookViewModel(
      * Can be called from UI to reload data
      */
     fun refreshBooks() {
+        loadBooks()
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
         loadBooks()
     }
 }

@@ -23,12 +23,19 @@ class BookRepository {
      * )
      */
     private val booksList = listOf(
-        Book(isbn = "", title = "Clean Code", nbPages = 0),
-        Book(isbn = "", title = "The Pragmatic Programmer", nbPages = 0),
-        Book(isbn = "", title = "Design Patterns", nbPages = 0),
-        Book(isbn = "", title = "Refactoring", nbPages = 0),
-        Book(isbn = "", title = "Head First Design Patterns", nbPages = 0)
-    )
+        Book(isbn = "123456", title = "Clean Code", nbPages = 5600),
+        Book(isbn = "23456", title = "The Pragmatic Programmer", nbPages = 230),
+        Book(isbn = "34567", title = "Design Patterns", nbPages = 500),
+        Book(isbn = "45678", title = "Refactoring", nbPages = 340),
+        Book(isbn = "56789", title = "Head First Design Patterns", nbPages = 400),
+        Book(isbn = "67890", title = "C++", nbPages = 200),
+        Book(isbn = "09877", title = "JAVA Eduction", nbPages = 100),
+        Book(isbn = "98765", title = "Python", nbPages = 300),
+        Book(isbn = "87654", title = "GL", nbPages = 450),
+        Book(isbn = "76543", title = "SYSTEM ", nbPages = 280),
+        Book(isbn = "65432", title = "LOGIC", nbPages = 320),
+
+        )
 
     /**
      * TODO for Students (TP1 - Exercise 2):
