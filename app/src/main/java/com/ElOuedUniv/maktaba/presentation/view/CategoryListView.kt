@@ -79,12 +79,21 @@ fun CategoryList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+
+        item {
+            Text(
+                text = "Total Categories: ${categories.size}",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
+
         items(categories) { category ->
             CategoryItem(category = category)
         }
     }
 }
-
 @Composable
 fun CategoryItem(category: Category) {
     Card(
@@ -96,10 +105,17 @@ fun CategoryItem(category: Category) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+
             Text(
-                text = "Category Item",
+                text = category.name,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = category.description
             )
         }
     }
