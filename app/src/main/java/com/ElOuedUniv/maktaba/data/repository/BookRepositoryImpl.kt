@@ -11,11 +11,11 @@ import javax.inject.Inject
 class BookRepositoryImpl @Inject constructor() : BookRepository {
 
     private val _booksList = mutableListOf(
-        Book(isbn = "11111", title = "Clean Code", nbPages = 10),
-        Book(isbn = "22222", title = "The Pragmatic Programmer", nbPages = 0),
-        Book(isbn = "33333", title = "Design Patterns", nbPages = 0),
-        Book(isbn = "44444", title = "Refactoring", nbPages = 0),
-        Book(isbn = "55555", title = "Head First Design Patterns", nbPages = 0)
+        Book(isbn = "123456789021", title = "Clean Code", nbPages = 1000),
+        Book(isbn = "276572264322", title = "The Pragmatic Programmer", nbPages = 450),
+        Book(isbn = "336667888333", title = "Design Patterns", nbPages = 880),
+        Book(isbn = "444887654444", title = "Refactoring", nbPages = 650),
+        Book(isbn = "555777777755", title = "Head First Design Patterns", nbPages = 980)
     )
 
     private val booksFlow = MutableSharedFlow<List<Book>>(replay = 1).apply {
