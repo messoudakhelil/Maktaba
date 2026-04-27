@@ -8,13 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(private val getCategoriesUseCase: GetCategoriesUseCase) : ViewModel() {
+class CategoryViewModel @Inject constructor(
+    private val getCategoriesUseCase: GetCategoriesUseCase
+) : ViewModel() {
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
@@ -33,8 +34,8 @@ class CategoryViewModel @Inject constructor(private val getCategoriesUseCase: Ge
                 .catch {
                     _isLoading.value = false
                 }
-                .collect { categoryList ->
-                    _categories.value = categoryList
+                .collect { list ->
+                    _categories.value = list
                     _isLoading.value = false
                 }
         }

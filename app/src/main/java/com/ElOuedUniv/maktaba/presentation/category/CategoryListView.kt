@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -12,13 +13,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.ElOuedUniv.maktaba.data.model.Category
-import com.ElOuedUniv.maktaba.presentation.category.CategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,55 +29,63 @@ fun CategoryListView(
     onBackClick: () -> Unit,
     viewModel: CategoryViewModel = hiltViewModel()
 ) {
+
     val categories by viewModel.categories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    val pink = Color(0xFFE91E63)
+    val softPink = Color(0xFFFCE4EC)
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { 
+                title = {
                     Text(
-                        "CATEGORIES", 
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 2.sp
-                        )
-                    ) 
+                        "CATEGORIES",
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp,
+                        color = pink
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = pink)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = softPink
                 )
             )
         }
     ) { paddingValues ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
+                .background(
+                    Brush.verticalGradient(listOf(softPink, Color.White))
+                )
         ) {
+
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = pink
                 )
             } else {
+
                 if (categories.isEmpty()) {
-                    EmptyCategoriesMessage(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    EmptyCategoriesMessage(Modifier.align(Alignment.Center))
                 } else {
-                    CategoryList(
-                        categories = categories,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    LazyColumn(
+                        contentPadding = PaddingValues(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(categories) { category ->
+                            CategoryItem(category)
+                        }
+                    }
                 }
             }
         }
@@ -82,73 +93,55 @@ fun CategoryListView(
 }
 
 @Composable
-fun CategoryList(
-    categories: List<Category>,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        items(categories) { category ->
-            CategoryItem(category = category)
-        }
-    }
-}
-
-@Composable
 fun CategoryItem(category: Category) {
+
+    val pink = Color(0xFFE91E63)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp),
-        shape = MaterialTheme.shapes.extraLarge,
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .height(140.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Category Icon
-            Surface(
+
+            Card(
                 modifier = Modifier.size(80.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(
-                    painter = painterResource(id = category.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxSize(),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                if (!category.imageUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = category.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),contentScale = ContentScale.Crop
+                    )
+                }
             }
-            
-            Spacer(modifier = Modifier.width(20.dp))
-            
-            // Text Details
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column {
+
                 Text(
                     text = category.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold,
+                    color = pink
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Text(
                     text = category.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    lineHeight = 20.sp
+                    color = Color.Gray,
+                    maxLines = 2
                 )
             }
         }
@@ -161,21 +154,8 @@ fun EmptyCategoriesMessage(modifier: Modifier = Modifier) {
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "📂",
-            style = MaterialTheme.typography.displayLarge,
-        )
+        Text("📂", style = MaterialTheme.typography.displayLarge)
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "No categories available",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Complete the TODO exercises in TP2",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("No categories available", color = Color.Gray)
     }
 }

@@ -1,5 +1,6 @@
 package com.ElOuedUniv.maktaba.data.repository
 
+import android.net.Uri
 import com.ElOuedUniv.maktaba.data.model.Book
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,18 +22,29 @@ class BookRepositoryImpl @Inject constructor() : BookRepository {
     private val booksFlow = MutableSharedFlow<List<Book>>(replay = 1).apply {
         tryEmit(_booksList.toList())
     }
-    
+
     override fun getAllBooks(): Flow<List<Book>> = flow {
-        delay(2000) // Simulate delay
+        delay(2000)
         emitAll(booksFlow)
     }
 
-    override fun getBookByIsbn(isbn: String): Book? {
+    override suspend fun getBookByIsbn(isbn: String): Book? {
         return _booksList.find { it.isbn == isbn }
     }
 
-    override fun addBook(book: Book) {
-        _booksList.add(book)
+    override suspend fun addBook(book: Book, imageUri: Uri?) {
+
+        val bookWithImage = if (imageUri != null) {
+            book.copy(imageUrl = imageUri.toString())
+        } else {
+            book
+        }
+        _booksList.add(bookWithImage)
+        booksFlow.tryEmit(_booksList.toList())
+    }
+
+    override suspend fun deleteBook(isbn: String) {
+        _booksList.removeIf { it.isbn == isbn }
         booksFlow.tryEmit(_booksList.toList())
     }
 }
